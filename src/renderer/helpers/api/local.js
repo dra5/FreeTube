@@ -22,6 +22,21 @@ const TRACKING_PARAM_NAMES = [
   'utm_term',
   'utm_content',
 ]
+const ALLOWED_LINK_PROTOCOLS = ['http:', 'https:']
+const SCHEMELESS_DOMAIN_URL_PATTERN = /^(?:\/\/)?[^./?#:@\s]+(?:\.[^./?#:@\s]+)+(?::\d+)?(?:[/?#]|$)/
+const YOUTUBE_REDIRECT_HOSTS = ['youtube.com', 'www.youtube.com']
+
+/**
+ * @param {URL} url
+ * @returns {string|null|undefined} The q value, null when missing, or undefined for a non-redirect URL.
+ */
+function getYouTubeRedirectTarget(url) {
+  if (!YOUTUBE_REDIRECT_HOSTS.includes(url.hostname) || url.pathname !== '/redirect') {
+    return undefined
+  }
+
+  return url.searchParams.get('q')
+}
 
 if (process.env.SUPPORTS_LOCAL_API) {
   Platform.shim.eval = (data) => {
@@ -700,6 +715,21 @@ export async function getLocalVideoInfo(id) {
     }
   }
 
+  if (
+    playerResponse?.data &&
+    (playerResponse.data.videoDetails?.isLive ||
+    playerResponse.data.videoDetails?.isPostLiveDvr) &&
+    !playerResponse.data.videoDetails?.isUpcoming &&
+    !playerResponse.data.streamingData?.hlsManifestUrl
+  ) {
+    const mwebRequestBody = createPlayerRequestBody(id, player.signature_timestamp, contentPoToken, 'MWEB')
+
+    const fields = 'streamingData,playabilityStatus,adSlots'
+    const mwebPlayerResponse = await htmlExtracts.session.actions.execute(`/player?$fields=${fields}`, mwebRequestBody)
+
+    Object.assign(playerResponse.data, mwebPlayerResponse.data)
+  }
+
   const cpn = Utils.generateRandomString(16)
 
   const info = new YT.VideoInfo([playerResponse, nextResponse], htmlExtracts.session.actions, cpn)
@@ -1209,6 +1239,58 @@ export async function getLocalArtistTopicChannelReleasesContinuation(channel, co
 }
 
 /**
+ * @param {import('youtubei.js').YTNodes.NavigationEndpoint} endpoint
+ * @returns {string|null}
+ */
+function getDirectChannelAboutUrl(endpoint) {
+  try {
+    let url = new URL(endpoint.toURL())
+
+    const redirectTarget = getYouTubeRedirectTarget(url)
+    if (redirectTarget !== undefined) {
+      if (!redirectTarget) return null
+      const destination = SCHEMELESS_DOMAIN_URL_PATTERN.test(redirectTarget)
+        ? `https://${redirectTarget.replace(/^\/\//, '')}`
+        : redirectTarget
+      url = new URL(destination)
+    }
+
+    return ALLOWED_LINK_PROTOCOLS.includes(url.protocol) ? url.href : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * @param {import('youtubei.js').YTNodes.ChannelAboutFullMetadata | import('youtubei.js').YTNodes.AboutChannel} about
+ * @returns {{ title: string, url: string, displayUrl: string, iconUrl: string }[]}
+ */
+export function parseLocalChannelAboutLinks(about) {
+  const links = about.primary_links ?? about.metadata?.links ?? []
+  const parsedLinks = []
+
+  for (const link of links) {
+    const endpoint = link.endpoint ?? link.link.endpoint
+    const url = getDirectChannelAboutUrl(endpoint)
+
+    if (!url) {
+      continue
+    }
+
+    const icons = link.icon ?? link.favicon ?? []
+
+    parsedLinks.push({
+      title: link.title.text?.trim() ?? '',
+      url,
+      displayUrl: url.replace(/^https?:\/\/(?:www\.)?/, ''),
+      iconUrl: icons[0]?.url ?? ''
+    })
+  }
+
+  return parsedLinks
+}
+
+/**
  * @param {YT.Channel} channel
  * @param {boolean} onlyIdNameThumbnail
  */
@@ -1472,6 +1554,21 @@ export function parseLocalListPlaylist(playlist, channelId = undefined, channelN
       videoCount: extractNumberFromString(gridPlaylist.video_count.text),
       isAlbum,
     }
+  } else if (playlist.type === 'GridShow') {
+    /** @type {import('youtubei.js').YTNodes.GridShow} */
+    const gridPlaylist = playlist
+
+    return {
+      type: 'playlist',
+      dataSource: 'local',
+      title: gridPlaylist.title.text,
+      thumbnail: gridPlaylist.thumbnail_renderer.thumbnail.at(0).url,
+      playlistId: gridPlaylist.endpoint.payload.browseId.substring(2),
+      channelName: gridPlaylist.author?.name,
+      channelId: gridPlaylist.author?.id,
+      isShow: true,
+      videoCount: extractNumberFromString(gridPlaylist.thumbnail_overlays?.at(0).text.runs?.at(0)?.text)
+    }
   } else {
     let internalChannelName
     let internalChannelId = null
@@ -1522,21 +1619,25 @@ function handleSearchResponse(response) {
   if (!response.results) {
     return {
       results: [],
-      continuationData: null
+      continuationData: null,
+      validResultsCount: 0,
     }
   }
 
-  const results = response.results
+  const resultsWithValidTypes = response.results
     .filter((item) => {
       return item.type === 'Video' || item.type === 'Channel' || item.type === 'Playlist' || item.type === 'HashtagTile' || item.type === 'Movie' || item.type === 'LockupView'
     })
+  const validResultsCount = resultsWithValidTypes.length
+  const results = resultsWithValidTypes
     .map((item) => parseListItem(item))
     .filter((item) => item)
 
   return {
     results,
     // check the length of the results, as there can be continuations for things that we've filtered out, which we don't want
-    continuationData: response.has_continuation && results.length > 0 ? response : null
+    continuationData: response.has_continuation && results.length > 0 ? response : null,
+    validResultsCount,
   }
 }
 
@@ -1870,7 +1971,7 @@ const VIEWS_OR_WATCHING_REGEX = /\d+(?:\.\d+)?\s?(?:[bkm]|thousand|[bm]illion)?\
 const VIEWS_IN_NUMBER_ONLY = /^\d+(\.\d)?[bkm]?$/i
 const PREMIERES_TIME_REGEX = /^(premieres|scheduled for) /i
 // Sometimes got `Streamed N (unit) ago`
-const PUBLISH_TIME_REGEX = /^(streamed )?\d+ ?\w+? ago/i
+const PUBLISH_TIME_REGEX = /^(streamed\s)?\d+\s?\w+?\sago/i
 
 /**
  * @param {string | undefined} text
@@ -1907,6 +2008,7 @@ function isPublishTimeText(text) {
 function parseLockupView(lockupView, channelId = undefined, channelName = undefined) {
   switch (lockupView.content_type) {
     case 'ALBUM':
+    case 'SHOW':
     case 'PLAYLIST':
     case 'COURSE':
     case 'PODCAST': {
@@ -1930,6 +2032,7 @@ function parseLockupView(lockupView, channelId = undefined, channelName = undefi
 
       const isCourse = lockupView.content_type === 'COURSE' || thumbnailOverlayBadgeView.badges.some(e => e.icon_name === 'COURSE')
       const isAlbum = lockupView.content_type === 'ALBUM' || thumbnailOverlayBadgeView.badges.some(e => e.icon_name === 'music')
+      const isShow = lockupView.content_type === 'SHOW'
 
       return {
         type: 'playlist',
@@ -1943,6 +2046,7 @@ function parseLockupView(lockupView, channelId = undefined, channelName = undefi
         isPodcast: lockupView.content_type === 'PODCAST',
         isAlbum,
         isCourse,
+        isShow,
       }
     }
     case 'SHORT':
@@ -2332,10 +2436,10 @@ export function parseLocalTextRuns(runs, emojiSize = 16, options = { looseChanne
           case 'WEB_PAGE_TYPE_UNKNOWN':
           default: {
             const url = new URL((endpoint.dialog?.type === 'ConfirmDialog' && endpoint.dialog.confirm_button.endpoint.payload.url) || endpoint.payload.url)
-            if (url.hostname === 'www.youtube.com' && url.pathname === '/redirect' && url.searchParams.has('q')) {
+            const redirectTarget = getYouTubeRedirectTarget(url)
+            if (redirectTarget != null) {
               // remove utm tracking parameters
-              const realURLStr = url.searchParams.get('q')
-              const realURL = new URL(realURLStr)
+              const realURL = new URL(redirectTarget)
               let urlChanged = false
 
               TRACKING_PARAM_NAMES.forEach((paramName) => {
@@ -2347,7 +2451,7 @@ export function parseLocalTextRuns(runs, emojiSize = 16, options = { looseChanne
 
               // `searchParams.delete` changes query string unnecessarily
               // Using original unless there is any change
-              parsedRuns.push(urlChanged ? realURL.toString() : realURLStr)
+              parsedRuns.push(urlChanged ? realURL.toString() : redirectTarget)
             } else {
               // this is probably a special YouTube URL like http://www.youtube.com/approachingnirvana
               parsedRuns.push(endpoint.payload.url)

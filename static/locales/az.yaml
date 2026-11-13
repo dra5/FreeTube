@@ -538,6 +538,8 @@ Settings:
     Hide Subscriptions Live: Abunəliklər Canlı Yayımını Gizlət
     Add: Əlavə et
     Remove: Sil
+    Hide Channel Shows: Kanal "Verilişlər" Bölməsini Gizlət
+    More Items Count: +{count} daha çox…
   Data Settings:
     Data Settings: Məlumatlar
     Select Export Type: Köçürmə Növünü Seç
@@ -571,7 +573,6 @@ Settings:
     All watched history has been successfully imported: Bütün izlənilən tarixçə uğurla idxal edildi
     All watched history has been successfully exported: Bütün izlənilən tarixçə uğurla ixrac edildi
     Playlist insufficient data: '"{playlist}" pleylisti üçün məlumat kifayət deyil, element ötürülür'
-    All playlists has been successfully imported: Bütün pleylistlər uğurla idxal edildi
     All playlists has been successfully exported: Bütün pleylistlər uğurla ixrac edildi
     All search history has been successfully imported: Bütün axtarış tarixçəsi uğurla idxal edildi
     All search history has been successfully exported: Bütün axtarış tarixçəsi uğurla ixrac edildi
@@ -622,6 +623,9 @@ Settings:
     Set Password To Prevent Access: Tənzimləmələrə girişi məhdudlaşdırmaq üçün parol təyin et
     Set Password: Parol Təyin Et
     Remove Password: Parolu Sil
+  Search Settings: Tənzimləmələri Axtar
+  Settings found: 1 tənzimləmə tapıldı | {count} tənzimləmə tapıldı
+  No Matching Settings: Axtarışınıza uyğun heç bir tənzimləmə yoxdur.
 Channel:
   Videos:
     Videos: Videolar
@@ -676,6 +680,7 @@ Channel:
     Joined: Qoşuldu
     Location: Məkan
     Featured Channels: Seçilmiş Kanallar
+    Links: Linklər
   Posts:
     This channel currently does not have any posts: Bu kanalda hazırda heç bir post yoxdur
     votes: '{votes} səs'
@@ -683,6 +688,9 @@ Channel:
     Reveal Answers: Cavabları Göstərin
     Hide Answers: Cavabları Gizlət
     Video hidden by FreeTube: FreeTube tərəfindən gizlədilən video
+  Shows:
+    Shows: Verilişlər
+    This channel does not currently have any shows: Bu kanalın hazırda heç bir verilişi yoxdur
 Video:
   External Player:
     OpenInTemplate: '{externalPlayer}-də Aç'

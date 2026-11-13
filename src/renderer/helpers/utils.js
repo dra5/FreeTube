@@ -9,6 +9,8 @@ export const CHANNEL_HANDLE_REGEX = /^@[\w.-]{3,30}$/
 
 const PUBLISHED_TEXT_REGEX = /(\d+)\s?([a-z]+)/i
 
+export const MIME_TYPE_CODECS_REGEX = /codecs="?([^"]+)"?/
+
 /**
  * @param {string} sortPreference
  * @returns {string[]}
@@ -80,7 +82,7 @@ export function calculatePublishedDate(publishedText, isLive = false, isUpcoming
 
   if (timeFrame.startsWith('second') || timeFrame === 's') {
     timeSpan = timeAmount * 1000
-  } else if (timeFrame.startsWith('minute') || timeFrame === 'm') {
+  } else if (timeFrame.startsWith('minute') || timeFrame === 'm' || timeFrame === 'min') {
     timeSpan = timeAmount * 60000
   } else if (timeFrame.startsWith('hour') || timeFrame === 'h') {
     timeSpan = timeAmount * 3600000

@@ -495,7 +495,6 @@ Settings:
     How do I import my subscriptions?: 'Kuidas ma saan oma tellimusi importida?'
     Manage Subscriptions: Halda tellimusi
     Export Playlists: Ekspordi esitusloendeid
-    All playlists has been successfully imported: Kõikide esitusloendite import õnnestus
     All playlists has been successfully exported: Kõikide esitusloendite eksport õnnestus
     Import Playlists: Impordi esitusloendeid
     Playlist insufficient data: „{playlist}“ esitusloendi kohta pole piisavalt andmeid, jätame vahele
@@ -570,6 +569,7 @@ Settings:
     Hide Channel Posts: Peida kanalite vahekaart „Postitused“
     Add: Lisa
     Remove: Eemalda
+    Hide Channel Shows: Peida kanalite vahekaart „Sarjad“
   Proxy Settings:
     Error getting network information. Is your proxy configured properly?: Võrguteavet ei õnnestu leida. Kas sa oled puhverserveri ikka korralikult seadistanud?
     City: Linn
@@ -639,6 +639,9 @@ Settings:
     Set Password To Prevent Access: Vältimaks ligipääsu seadistustele määra salasõna
   Sort Settings Sections (A-Z): Järjesta seadistused (A-Z)
   Return to Settings Menu: Tagasi seadistuste menüü juurde
+  Search Settings: Otsi seadistustest
+  Settings found: Leidus üks seadistus | Leidus {count} seadistust
+  No Matching Settings: Sinu otsingule ei vasta ükski seadistus.
 About:
   #On About page
   About: 'Teave'
@@ -741,6 +744,7 @@ Channel:
       Search for: Otsi silti „{tag}“
       Tags: Sildid
     Joined: Liitunud
+    Links: Lingid
   This channel does not allow searching: See kanal ei luba otsingu kasutamist
   Channel Tabs: Kanali kaardid
   Shorts:
@@ -771,6 +775,9 @@ Channel:
     Courses: Kursused
     This channel does not currently have any courses: Sellel kanalil pole hetkel kursuseid
   View All: Vaata kõiki
+  Shows:
+    Shows: Sarjad
+    This channel does not currently have any shows: Selles kanalis pole hetkel ühtegi sarja
 Video:
   Mark As Watched: 'Märgi vaadatuks'
   Remove From History: 'Kustuta ajaloost'

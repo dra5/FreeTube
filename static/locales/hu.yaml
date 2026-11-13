@@ -500,7 +500,6 @@ Settings:
     Export Playlists: Lejátszási listák exportálása
     Import Playlists: Lejátszási listák importálása
     All playlists has been successfully exported: Az összes lejátszási lista exportálása sikeresen megtörtént
-    All playlists has been successfully imported: Az összes lejátszási lista importálása sikeresen megtörtént
     Subscription File: Feliratkozás-fájl
     History File: Előzményfájl
     Playlist File: Lejátszási lista fájl
@@ -573,6 +572,8 @@ Settings:
     Hide Subscriptions Posts: Feliratkozási bejegyzések elrejtése
     Add: Hozzáadás
     Remove: Eltávolítás
+    Hide Channel Shows: A „Műsorok” lap elrejtése a csatornán
+    More Items Count: +{count} további…
   The app needs to restart for changes to take effect. Restart and apply change?: Az alkalmazásnak újra kell indulnia, hogy a változtatások életbe lépjenek. Induljon újra és alkalmazza a módosítást?
   Proxy Settings:
     City: Helység
@@ -645,6 +646,9 @@ Settings:
   SABR:
     Label: SABR engedélyezése mint DASH-háttérprogram
     Tooltip: A SABR lesz az egyetlen DASH-háttérprogram a jövőbeli kiadásokban, és nem lehet majd letiltani. Ez a kapcsoló arra az esetre szolgál, ha a korai megvalósítása helyrehozhatatlan problémákat okozna.
+  Search Settings: Keresési beállítások
+  Settings found: 1 beállítás található | {count} beállítás található
+  No Matching Settings: Nem található a keresésnek megfelelő beállítás.
 About:
   #On About page
   About: 'Névjegy'
@@ -747,6 +751,7 @@ Channel:
     Tags:
       Tags: Címkék
       Search for: „{tag}” címke keresése
+    Links: Hivatkozások
   This channel is age-restricted and currently cannot be viewed in FreeTube.: Ez a csatorna korhatáros, és jelenleg nem tekinthető meg a FreeTube alkalmazásban.
   Channel Tabs: Csatornalapok
   Live:
@@ -777,6 +782,9 @@ Channel:
     This channel does not currently have any courses: Ezen a csatornán jelenleg nincsenek tanfolyamok
     Courses: Tanfolyamok
   View All: Összes megtekintése
+  Shows:
+    Shows: Műsorok
+    This channel does not currently have any shows: Ezen a csatornán jelenleg nincsenek műsorok
 Video:
   Mark As Watched: 'Megjelölés megtekintettként'
   Remove From History: 'Eltávolítás az előzményekből'
@@ -1001,7 +1009,7 @@ Tooltips:
   General Settings:
     Preferred API Backend: Válassza ki a háttéralkalmazást, amelyet a FreeTube használ az adatok megszerzéséhez. A helyi API egy beépített kinyerő. Az Invidious API használatához Invidious-kiszolgáló szükséges.
     Region for Trending: A felkapottak régiója lehetővé teszi a választást, hogy melyik ország felkapott videóit szeretné megtekinteni.
-    Invidious Instance: Az Invidious-példány, amelyhez a FreeTube API-hívások céljából kapcsolódik. A beállítás módosításai csak a jelenlegi ablakra vonatkoznak, kivéve, ha ezt a példányt alapértelmezettként állítja be.
+    Invidious Instance: Az Invidious példány, amelyhez a FreeTube API-hívások céljából kapcsolódik. A beállítás módosításai csak a jelenlegi ablakra vonatkoznak, kivéve, ha ezt a példányt alapértelmezettként állítja be.
     Thumbnail Preference: A FreeTube-ban minden videó bélyegképe az alapértelmezett miniatűr helyett a videóból kiválasztott képkockára lesz cserélve, amely elmosódott vagy rejtett is lehet.
     Fallback to Non-Preferred Backend on Failure: Ha a választott API-val probléma adódik, a FreeTube automatikusan megpróbálja a nem előnyben részesített API-t használni tartalék módszerként, ha ez a funkció engedélyezve van.
     External Link Handling: "Válassza ki az alapértelmezett viselkedést, amikor egy olyan hivatkozásra kattint, amelyet FreeTube nem tud megnyitni.\nA FreeTube alapértelmezés szerint megnyitja a kattintott hivatkozást az alapértelmezett böngészőben.\n"
