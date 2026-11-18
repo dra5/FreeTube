@@ -85,6 +85,7 @@ Search Filters:
     HDR: HDR（高动态范围）
     VR180: VR180
   Clear Filters: 清除筛选器
+  No results found: 未找到结果。尝试不同的关键词或调整搜索筛选器
 Subscriptions:
     # On Subscriptions Page
   Subscriptions: '订阅'
@@ -514,6 +515,7 @@ Settings:
     Setting object has insufficient data, skipping item: 设置对象数据不足，跳过项目
     Unknown setting key: 未知的设置键：{key}
     Non-transferable setting key: 不可传输的设置键：{key}
+    Playlists have been successfully imported: 已成功导入 1/{total} 个播放列表 | 已成功导入{count}/{total} 个播放列表
   Distraction Free Settings:
     Hide Popular Videos: 隐藏流行视频
     Hide Trending Videos: 隐藏热门视频

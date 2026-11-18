@@ -85,6 +85,7 @@ Search Filters:
     Features: Destaques
     3D: 3D
   Clear Filters: Excluir filtros
+  No results found: Nenhum resultado encontrado. Tente usar palavras-chave diferentes ou ajuste os filtros de busca
 Subscriptions:
     # On Subscriptions Page
   Subscriptions: 'Inscrições'
@@ -514,6 +515,7 @@ Settings:
     Setting object has insufficient data, skipping item: O objeto de configuração possui dados insuficientes, ignorando o item
     Unknown setting key: 'Chave de configuração desconhecida: {key}'
     Non-transferable setting key: 'Chave de configuração não transferível: {key}'
+    Playlists have been successfully imported: 1/{total} playlist importada com sucesso | {count}/{total} playlists importadas com sucesso
   Distraction Free Settings:
     Hide Live Chat: Ocultar chat ao vivo
     Hide Popular Videos: Ocultar vídeos populares
